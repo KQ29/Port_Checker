@@ -1,7 +1,6 @@
 import socket
 from concurrent.futures import ThreadPoolExecutor
 import subprocess
-from common_ports import common_ports
 
 def scan_port(ip, port):
     """Attempt to connect to a specified port on the IP address and get service name."""
@@ -15,7 +14,7 @@ def scan_port(ip, port):
         try:
             service = socket.getservbyport(port)
         except OSError:
-            service = common_ports.get(port, 'Unknown Service')  # Use custom service name or default
+            service = 'Unknown Service'  # Default to 'Unknown Service' if not found
         
         process_info = get_process_info(port)  # Get process info for open ports
         return port, service, process_info
@@ -33,6 +32,10 @@ def scan_ports(ip, port_range=(1, 1024)):
             if result:
                 open_ports.append(result)
     return open_ports
+
+def count_open_ports(open_ports):
+    """Count the number of open ports and return the count."""
+    return len(open_ports)
 
 def validate_ip(ip):
     """Validate the IP address format."""

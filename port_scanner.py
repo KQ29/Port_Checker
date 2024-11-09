@@ -1,4 +1,4 @@
-from scanner_utils import validate_ip, scan_ports
+from scanner_utils import validate_ip, scan_ports, count_open_ports
 import socket
 
 if __name__ == "__main__":
@@ -27,5 +27,9 @@ if __name__ == "__main__":
         for port, service, process_info in open_ports:
             process_name = process_info.split()[0] if process_info != "No process info available" else "N/A"
             print("{:<8} {:<15} {:<20} {}".format(port, service, process_name, process_info))
+        
+        # Display the count of open ports
+        open_ports_count = count_open_ports(open_ports)
+        print(f"\nTotal Open Ports Found: {open_ports_count}")
     else:
         print("No open ports found.")
