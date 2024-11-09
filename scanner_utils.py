@@ -15,3 +15,13 @@ def scan_port(ip, port):
         return None  # Port is closed or filtered
     finally:
         sock.close()
+
+def scan_ports(ip, port_range=(1, 1024)):
+    """Scan a range of ports on the target IP address."""
+    open_ports = []
+    with ThreadPoolExecutor(max_workers=100) as executor:
+        results = executor.map(lambda port: scan_port(ip, port), range(port_range[0], port_range[1]+1))
+        for result in results:
+            if result:
+                open_ports.append(result)
+    return open_ports
