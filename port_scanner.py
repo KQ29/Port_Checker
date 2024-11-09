@@ -22,7 +22,7 @@ if __name__ == "__main__":
     
     if open_ports:
         print("\nOpen Ports:")
-        for port, service in open_ports:
-            print(f"Port {port}: {service}")
+        for port, service, process_info in open_ports:
+            print(f"Port {port}: {service} - {process_info}")
     else:
         print("No open ports found.")
