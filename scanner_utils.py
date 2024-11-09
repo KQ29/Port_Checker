@@ -25,3 +25,11 @@ def scan_ports(ip, port_range=(1, 1024)):
             if result:
                 open_ports.append(result)
     return open_ports
+
+def validate_ip(ip):
+    """Validate the IP address format."""
+    try:
+        socket.inet_aton(ip)
+        return True
+    except socket.error:
+        return False
