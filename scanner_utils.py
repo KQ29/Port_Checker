@@ -1,5 +1,6 @@
 import socket
 from concurrent.futures import ThreadPoolExecutor
+import subprocess
 from common_ports import common_ports
 
 def scan_port(ip, port):
@@ -10,7 +11,8 @@ def scan_port(ip, port):
     try:
         sock.connect((ip, port))
         service = common_ports.get(port, 'Unknown Service')
-        return port, service  # Return port and service if open
+        process_info = get_process_info(port)  # Get process info for open ports
+        return port, service, process_info
     except:
         return None  # Port is closed or filtered
     finally:
@@ -33,3 +35,22 @@ def validate_ip(ip):
         return True
     except socket.error:
         return False
+
+def get_process_info(port):
+    """Get process information for a given open port using lsof or netstat."""
+    try:
+        # Using lsof to get the process info on Unix systems
+        result = subprocess.run(['lsof', '-i', f':{port}'], capture_output=True, text=True)
+        
+        if result.stdout:
+            # Return only the first line of process information for simplicity
+            return result.stdout.splitlines()[1]  # Skipping header line
+        else:
+            return "No process info available"  # If no process found
+    except FileNotFoundError:
+        # If `lsof` is not available, try using `netstat`
+        result = subprocess.run(['netstat', '-anp', 'tcp'], capture_output=True, text=True)
+        for line in result.stdout.splitlines():
+            if f'.{port} ' in line:
+                return line  # Return matching line with port info
+        return "No process info available"
