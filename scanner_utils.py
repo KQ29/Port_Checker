@@ -4,13 +4,19 @@ import subprocess
 from common_ports import common_ports
 
 def scan_port(ip, port):
-    """Attempt to connect to a specified port on the IP address."""
+    """Attempt to connect to a specified port on the IP address and get service name."""
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     sock.settimeout(0.5)
 
     try:
         sock.connect((ip, port))
-        service = common_ports.get(port, 'Unknown Service')
+        
+        # Attempt to retrieve the service name for the port
+        try:
+            service = socket.getservbyport(port)
+        except OSError:
+            service = common_ports.get(port, 'Unknown Service')  # Use custom service name or default
+        
         process_info = get_process_info(port)  # Get process info for open ports
         return port, service, process_info
     except:
